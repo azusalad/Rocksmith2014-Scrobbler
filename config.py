@@ -1,17 +1,22 @@
-# Path to the Rocksniffer current_song html file
-# Example: file:///C:/RockSniffer.0.5.0/addons/current_song/current_song.html
-CURRENT_SONG_HTML = ""
-
 # ---------------------------------------
-# last.fm information
+# Required fields
 # ---------------------------------------
+REQUIRED_FIELDS = {
+  # Path to the Rocksniffer current_song html file
+  # Example: file:///C:/RockSniffer.0.5.0/addons/current_song/current_song.html
+  "CURRENT_SONG_HTML": "",
 
-LAST_FM_USERNAME = ""
-LAST_FM_PASSWORD = ""
-# You have to have your own unique two values for API_KEY and API_SECRET
-# Obtain yours from https://www.last.fm/api/account/create for Last.fm
-LAST_FM_API_KEY = ""
-LAST_FM_API_SECRET = ""
+  # ---------------------------------------
+  # last.fm information
+  # ---------------------------------------
+
+  "LAST_FM_USERNAME": "",
+  "LAST_FM_PASSWORD": "",
+  # You have to have your own unique two values for API_KEY and API_SECRET
+  # Obtain yours from https://www.last.fm/api/account/create for Last.fm
+  "LAST_FM_API_KEY": "",
+  "LAST_FM_API_SECRET": "",
+}
 
 # ---------------------------------------
 # Replacement/Edits

@@ -10,12 +10,8 @@ import logging
 from config import *
 
 class RocksmithScrobbler:
-  def __init__(self, network):
-    logging.basicConfig(
-      level = logging.INFO,
-      format = "[%(levelname)s] %(message)s"
-      )
-    self.logger = logging.getLogger(__name__)
+  def __init__(self, network, logger):
+    self.logger = logger
     self.logger.info("Starting RocksmithScrobbler...")
 
     self.network = network
@@ -87,15 +83,33 @@ class RocksmithScrobbler:
 
 
 if __name__ == "__main__":
+  # Create logger
+  logging.basicConfig(
+    level = logging.INFO,
+    format = "[%(levelname)s] %(message)s"
+    )
+  logger = logging.getLogger(__name__)
+
+  # Ensure all required fields are present before continuing
+  required_fields_present = True
+  for key in REQUIRED_FIELDS:
+    if not REQUIRED_FIELDS[key]:
+      logger.error(f"Missing required field: {key}")
+      required_fields_present = False
+  if not required_fields_present:
+    logger.critical("There are missing required fields.  Please edit config.py and fill out the required fields.")
+    exit()
+
   # Start Pylast
   # In order to perform a write operation you need to authenticate yourself
-  password_hash = pylast.md5(LAST_FM_PASSWORD)
+  password_hash = pylast.md5(REQUIRED_FIELDS["LAST_FM_PASSWORD"])
   network = pylast.LastFMNetwork(
-      api_key=LAST_FM_API_KEY,
-      api_secret=LAST_FM_API_SECRET,
-      username=LAST_FM_USERNAME,
-      password_hash=password_hash,
+      api_key = REQUIRED_FIELDS["LAST_FM_API_KEY"],
+      api_secret = REQUIRED_FIELDS["LAST_FM_API_SECRET"],
+      username = REQUIRED_FIELDS["LAST_FM_USERNAME"],
+      password_hash = REQUIRED_FIELDS["password_hash"],
   )
 
+  # Run scrobbler
   scrobbler = RocksmithScrobbler(network)
   scrobbler.run()
