@@ -3,15 +3,21 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from time import sleep
-from time import time
+from time import sleep, time
 import pylast
+import logging
 
 from config import *
 
 class RocksmithScrobbler:
   def __init__(self, network):
-    print("Starting RocksmithScrobbler")
+    logging.basicConfig(
+      level = logging.INFO,
+      format = "[%(levelname)s] %(message)s"
+      )
+    self.logger = logging.getLogger(__name__)
+    self.logger.info("Starting RocksmithScrobbler")
+
     self.network = network
     try:
       self.driver = webdriver.Firefox()
@@ -21,7 +27,7 @@ class RocksmithScrobbler:
     self.title = ""
     self.album = ""
     self.driver.get(CURRENT_SONG_HTML)
-    print("Fetched Rocksniffer HTML file")
+    self.logger.info("Fetched Rocksniffer HTML file")
     WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
   def run(self):
@@ -29,7 +35,7 @@ class RocksmithScrobbler:
       try:
         self.scrobble_loop()
       except KeyboardInterrupt:
-        print("KeyboardInterrupt received, closing driver...")
+        self.logger.info("KeyboardInterrupt received, closing driver...")
         self.driver.close()
         break
     exit()
@@ -54,14 +60,14 @@ class RocksmithScrobbler:
 
   def end_of_song(self, progress_text: str) -> bool:
     if progress_text == "":
-      print(f"Progress_text currently not present")
+      self.logger.info(f"Progress_text currently not present")
       return False
     current_time = progress_text.split("/")[0]
     total_time = progress_text.split("/")[1]
 
     current_seconds = int(current_time.split(":")[0]) * 60 + int(current_time.split(":")[1])
     total_seconds = int(total_time.split(":")[0]) * 60 + int(total_time.split(":")[1])
-    print(f"Current time: {current_seconds} Total time: {total_seconds}")
+    self.logger.info(f"Current time: {current_seconds} Total time: {total_seconds}")
     return (total_seconds - current_seconds) <= END_THRESHOLD
 
   def clear_data(self):
@@ -70,9 +76,9 @@ class RocksmithScrobbler:
     self.album = ""
 
   def scrobble(self):
-    print(f"Scrobbling: {self.artist}, {self.album}, {self.title}")
+    self.logger.info(f"Scrobbling: {self.title}, {self.artist}, {self.album}")
     if self.album:
-      self.network.scrobble(artist=self.artist, title=self.title, album=self.album, timestamp=int(time()))
+      self.network.scrobble(title=self.title, artist=self.artist, album=self.album, timestamp=int(time()))
     else:
       self.network.scrobble(artist=self.artist, title=self.title, timestamp=int(time()))
     self.clear_data()
