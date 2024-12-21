@@ -16,7 +16,7 @@ class RocksmithScrobbler:
       format = "[%(levelname)s] %(message)s"
       )
     self.logger = logging.getLogger(__name__)
-    self.logger.info("Starting RocksmithScrobbler")
+    self.logger.info("Starting RocksmithScrobbler...")
 
     self.network = network
     try:
@@ -27,15 +27,16 @@ class RocksmithScrobbler:
     self.title = ""
     self.album = ""
     self.driver.get(CURRENT_SONG_HTML)
-    self.logger.info("Fetched Rocksniffer HTML file")
+    self.logger.info("Fetching Rocksniffer HTML file...")
     WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
   def run(self):
+    self.logger.info("Reading Rocksmith data and waiting to scrobble")
     while True:
       try:
         self.scrobble_loop()
       except KeyboardInterrupt:
-        self.logger.info("KeyboardInterrupt received, closing driver...")
+        self.logger.error("KeyboardInterrupt received, closing driver...")
         self.driver.close()
         break
     exit()
@@ -60,14 +61,14 @@ class RocksmithScrobbler:
 
   def end_of_song(self, progress_text: str) -> bool:
     if progress_text == "":
-      self.logger.info(f"Progress_text currently not present")
+      self.logger.debug(f"Progress_text currently not present")
       return False
     current_time = progress_text.split("/")[0]
     total_time = progress_text.split("/")[1]
 
     current_seconds = int(current_time.split(":")[0]) * 60 + int(current_time.split(":")[1])
     total_seconds = int(total_time.split(":")[0]) * 60 + int(total_time.split(":")[1])
-    self.logger.info(f"Current time: {current_seconds} Total time: {total_seconds}")
+    self.logger.debug(f"Current time: {current_seconds} Total time: {total_seconds}")
     return (total_seconds - current_seconds) <= END_THRESHOLD
 
   def clear_data(self):
