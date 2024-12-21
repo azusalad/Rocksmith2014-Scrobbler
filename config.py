@@ -36,8 +36,8 @@ ALBUM_EDITS = {}
 # ---------------------------------------
 
 # Submit scrobble when this many seconds away from the end of the song
-END_THRESHOLD = 3
+END_THRESHOLD = 2
+# Submit now playing when this many seconds away from the start of the song
+START_THRESHOLD = 15
 # Interval time in seconds between checking song duration
 SLEEP_INTERVAL = 1
-# Interval time in seconds to wait after submitting a scrobble
-SCROBBLE_TIMEOUT = 15
