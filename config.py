@@ -19,9 +19,9 @@ LAST_FM_API_SECRET = ""
 # The key is the exact text you want to find
 # The value is the exact text you want to replace it with
 # Example:
-#   "Rosé (ft. Bruno Mars)": "Rosé"
+#   "Rosé (ft. Bruno Mars)": "Rosé",
 ARTIST_EDITS = {
-  # Example: "Rosé (ft. Bruno Mars)": "Rosé"
+  # Example: "Rosé (ft. Bruno Mars)": "Rosé",
 }
 TITLE_EDITS = {}
 ALBUM_EDITS = {}
