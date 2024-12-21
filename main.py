@@ -13,7 +13,10 @@ class RocksmithScrobbler:
   def __init__(self, network):
     print("Starting RocksmithScrobbler")
     self.network = network
-    self.driver = webdriver.Firefox()
+    try:
+      self.driver = webdriver.Firefox()
+    except:
+      self.driver = webdriver.Chrome()
     self.artist = ""
     self.title = ""
     self.album = ""
