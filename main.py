@@ -4,8 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from time import sleep
+from time import time
 import pylast
-import webbrowser
 
 from config import *
 
@@ -19,22 +19,34 @@ class RocksmithScrobbler:
     self.album = ""
     self.driver.get(CURRENT_SONG_HTML)
     print("Fetched Rocksniffer HTML file")
-    sleep(10)  # TODO: Replace this with a WebDriverWait
+    WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
   def run(self):
-    self.scrobble_loop()
+    while True:
+      try:
+        self.scrobble_loop()
+      except KeyboardInterrupt:
+        print("KeyboardInterrupt received, closing driver...")
+        self.driver.close()
+        break
+    exit()
   
   def scrobble_loop(self):
     if self.end_of_song(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text):
       self.artist = self.driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
       self.title = self.driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
       self.album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
+      if self.album != "":
+        self.album = self.album.split(" (")[0]
       self.scrobble()
     sleep(SLEEP_INTERVAL)
 
   def end_of_song(self, progress_text: str) -> bool:
-    current_time = progress.split("/")[0]
-    total_time = progress.split("/")[1]
+    if progress_text == "":
+      print(f"Progress_text currently not present")
+      return False
+    current_time = progress_text.split("/")[0]
+    total_time = progress_text.split("/")[1]
 
     current_seconds = int(current_time.split(":")[0]) * 60 + int(current_time.split(":")[1])
     total_seconds = int(total_time.split(":")[0]) * 60 + int(total_time.split(":")[1])
@@ -47,8 +59,11 @@ class RocksmithScrobbler:
     self.album = ""
 
   def scrobble(self):
-    # TODO: Scrobble to last.fm
     print(f"Scrobbling: {self.artist}, {self.album}, {self.title}")
+    if self.album:
+      self.network.scrobble(artist=self.artist, title=self.title, album=self.album, timestamp=int(time()))
+    else:
+      self.network.scrobble(artist=self.artist, title=self.title, timestamp=int(time()))
     self.clear_data()
     sleep(SCROBBLE_TIMEOUT)
 
