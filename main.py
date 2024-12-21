@@ -4,11 +4,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from time import sleep
+import pylast
+import webbrowser
 
 from config import *
 
 class RocksmithScrobbler:
-  def __init__(self):
+  def __init__(self, network):
+    self.network = network
     self.driver = webdriver.Firefox()
     self.artist = ""
     self.title = ""
@@ -17,7 +20,6 @@ class RocksmithScrobbler:
     sleep(10)  # TODO: Replace this with a WebDriverWait
 
   def run(self):
-    # TODO: Add scrobbler connection here
     self.scrobble_loop()
   
   def scrobble_loop(self):
@@ -43,11 +45,22 @@ class RocksmithScrobbler:
 
   def scrobble(self):
     # TODO: Scrobble to last.fm
+    print(f"Scrobbling: {self.artist}, {self.album}, {self.title}")
     self.clear_data()
     sleep(SCROBBLE_TIMEOUT)
     pass
 
 
 if __name__ == "__main__":
-  scrobbler = RocksmithScrobbler()
+  # Start Pylast
+  # In order to perform a write operation you need to authenticate yourself
+  password_hash = pylast.md5(LAST_FM_PASSWORD)
+  network = pylast.LastFMNetwork(
+      api_key=LAST_FM_API_KEY,
+      api_secret=LAST_FM_API_SECRET,
+      username=LAST_FM_USERNAME,
+      password_hash=password_hash,
+  )
+
+  scrobbler = RocksmithScrobbler(network)
   scrobbler.run()
