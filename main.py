@@ -41,6 +41,14 @@ class RocksmithScrobbler:
       self.album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
       if self.album != "":
         self.album = self.album.split(" (")[0]
+
+      if self.artist in ARTIST_EDITS:
+        self.artist = ARTIST_EDITS[self.artist]
+      if self.title in TITLE_EDITS:
+        self.title = TITLE_EDITS[self.title]
+      if self.album in ALBUM_EDITS:
+        self.album = ALBUM_EDITS[self.album]
+
       self.scrobble()
     sleep(SLEEP_INTERVAL)
 
