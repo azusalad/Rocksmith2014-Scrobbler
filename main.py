@@ -12,7 +12,7 @@ from config import *
 class RocksmithScrobbler:
   def __init__(self, network, logger):
     self.logger = logger
-    self.logger.info("Starting RocksmithScrobbler...")
+    self.logger.info("Starting RocksmithScrobbler.  Please ensure that Rocksniffer is already running.")
 
     self.network = network
     try:
@@ -22,7 +22,7 @@ class RocksmithScrobbler:
     self.artist = ""
     self.title = ""
     self.album = ""
-    self.driver.get(CURRENT_SONG_HTML)
+    self.driver.get(REQUIRED_FIELDS["CURRENT_SONG_HTML"])
     self.logger.info("Fetching Rocksniffer HTML file...")
     WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
@@ -31,11 +31,10 @@ class RocksmithScrobbler:
     while True:
       try:
         self.scrobble_loop()
-      except KeyboardInterrupt:
-        self.logger.error("KeyboardInterrupt received, closing driver...")
+      except KeyboardInterrupt as e:
+        self.logger.critical("KeyboardInterrupt received, closing driver...")
         self.driver.close()
-        break
-    exit()
+        raise e
   
   def scrobble_loop(self):
     if self.end_of_song(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text):
@@ -107,9 +106,9 @@ if __name__ == "__main__":
       api_key = REQUIRED_FIELDS["LAST_FM_API_KEY"],
       api_secret = REQUIRED_FIELDS["LAST_FM_API_SECRET"],
       username = REQUIRED_FIELDS["LAST_FM_USERNAME"],
-      password_hash = REQUIRED_FIELDS["password_hash"],
+      password_hash = password_hash,
   )
 
   # Run scrobbler
-  scrobbler = RocksmithScrobbler(network)
+  scrobbler = RocksmithScrobbler(network, logger)
   scrobbler.run()
