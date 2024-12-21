@@ -11,22 +11,24 @@ from config import *
 
 class RocksmithScrobbler:
   def __init__(self, network):
+    print("Starting RocksmithScrobbler")
     self.network = network
     self.driver = webdriver.Firefox()
     self.artist = ""
     self.title = ""
     self.album = ""
-    driver.get(CURRENT_SONG_HTML)
+    self.driver.get(CURRENT_SONG_HTML)
+    print("Fetched Rocksniffer HTML file")
     sleep(10)  # TODO: Replace this with a WebDriverWait
 
   def run(self):
     self.scrobble_loop()
   
   def scrobble_loop(self):
-    if self.end_of_song(driver.find_element(By.CLASS_NAME, "progress_bar_text").text):
-      self.artist = driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
-      self.title = driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
-      self.album = driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
+    if self.end_of_song(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text):
+      self.artist = self.driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
+      self.title = self.driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
+      self.album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
       self.scrobble()
     sleep(SLEEP_INTERVAL)
 
@@ -36,6 +38,7 @@ class RocksmithScrobbler:
 
     current_seconds = int(current_time.split(":")[0]) * 60 + int(current_time.split(":")[1])
     total_seconds = int(total_time.split(":")[0]) * 60 + int(total_time.split(":")[1])
+    print(f"Current time: {current_seconds} Total time: {total_seconds}")
     return (total_seconds - current_seconds) <= END_THRESHOLD
 
   def clear_data(self):
@@ -48,7 +51,6 @@ class RocksmithScrobbler:
     print(f"Scrobbling: {self.artist}, {self.album}, {self.title}")
     self.clear_data()
     sleep(SCROBBLE_TIMEOUT)
-    pass
 
 
 if __name__ == "__main__":
