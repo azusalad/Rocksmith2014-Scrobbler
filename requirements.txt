@@ -1,0 +1,2 @@
+pylast==5.3.0
+selenium==4.27.1
