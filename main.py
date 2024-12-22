@@ -95,18 +95,58 @@ class RocksmithScrobbler:
     artist = self.driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
     title = self.driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
     album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
+    
     if album != "":
       album = album.split(" (")[0]
+    title, artist, album = self.apply_edits(title, artist, album)
 
-    if artist in ARTIST_EDITS:
-      artist = ARTIST_EDITS[artist]
-    if title in TITLE_EDITS:
-      title = TITLE_EDITS[title]
-    if album in ALBUM_EDITS:
-      album = ALBUM_EDITS[album]
-    
     return (title, artist, album)
 
+
+  def apply_edits(self, title: str, artist: str, album: str) -> (str, str, str):
+    """Apply edits to song information based on config.py"""
+
+    # Specific song edits
+    if (title, artist, album) in SPECIFIC_SONG_EDITS:
+      return SPECIFIC_SONG_EDITS[(title, artist, album)]
+
+    title_done, artist_done, album_done = False, False, False
+
+    # Bulk plain text edits
+    if title in BULK_TITLE_EDITS:
+      title = BULK_TITLE_EDITS[title]
+      title_done = True
+    if artist in BULK_ARTIST_EDITS:
+      artist = BULK_ARTIST_EDITS[artist]
+      artist_done = True
+    if album in BULK_ALBUM_EDITS:
+      album = BULK_ALBUM_EDITS[album]
+      album_done = True
+    
+    # Bulk regex edits
+    if not title_done:
+      for pattern in REGEX_BULK_TITLE_EDITS:
+        modified = re.sub(pattern, REGEX_BULK_TITLE_EDITS[pattern], title)
+        if title != modified:
+          title = modified
+          title_done = True
+          break
+    if not artist_done:
+      for pattern in REGEX_BULK_ARTIST_EDITS:
+        modified = re.sub(pattern, REGEX_BULK_ARTIST_EDITS[pattern], artist)
+        if artist != modified:
+          artist = modified
+          artist_done = True
+          break
+    if not album_done:
+      for pattern in REGEX_BULK_ALBUM_EDITS:
+        modified = re.sub(pattern, REGEX_BULK_ALBUM_EDITS[pattern], album)
+        if album != modified:
+          album = modified
+          album_done = True
+          break
+
+    return (title, artist, album)
 
   def clear_data(self):
     """Clear song data"""
