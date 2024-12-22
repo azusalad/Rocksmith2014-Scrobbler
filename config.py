@@ -21,20 +21,34 @@ REQUIRED_FIELDS = {
 # ---------------------------------------
 # Replacement/Edits
 # ---------------------------------------
-# The key is the exact text you want to find
-# The value is the exact text you want to replace it with
-# Example:
-#   "Rosé (ft. Bruno Mars)": "Rosé",
-ARTIST_EDITS = {
-  # Example: "Rosé (ft. Bruno Mars)": "Rosé",
+# Match all tags with plain text before replacing
+SPECIFIC_SONG_EDITS = {
+  # (original title, original artist, original album): (modified title, modified artist, modified album)
+  # Example below
+  ('Don\'t Say "Lazy"', "Houkago Tea Time", 'Don\'t Say "Lazy"'): ('Don\'t Say "Lazy" (From "K-On!")', "Sakurakou K-ON Bu", 'Don\'t Say "Lazy" (From "K-On!)'),
 }
-TITLE_EDITS = {}
-ALBUM_EDITS = {}
+
+# Match individual tags with plain text
+BULK_ARTIST_EDITS = {
+  # original artist: modified artist
+  # Example below
+  "Rosé (ft. Bruno Mars)": "Rosé",
+}
+BULK_TITLE_EDITS = {}
+BULK_ALBUM_EDITS = {}
+
+# Match individual tags with regular expressions
+REGEX_BULK_ARTIST_EDITS = {
+  # find: replace
+  # Example below
+  r"(.+) \(ft\..+": r"\1",
+}
+REGEX_BULK_TITLE_EDITS = {}
+REGEX_BULK_ALBUM_EDITS = {}
 
 # ---------------------------------------
 # Probably don't want to change the values below
 # ---------------------------------------
-
 # Submit scrobble when this many seconds away from the end of the song
 END_THRESHOLD = 2
 # Submit now playing when this many seconds away from the start of the song
