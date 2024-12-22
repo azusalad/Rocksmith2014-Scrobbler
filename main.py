@@ -4,9 +4,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from time import sleep, time
+import sys
 import pylast
 import logging
-
+import os
+sys.path.append(os.path.dirname(sys.executable))
 from config import *
 
 class RocksmithScrobbler:
@@ -191,7 +193,7 @@ if __name__ == "__main__":
       required_fields_present = False
   if not required_fields_present:
     logger.critical("There are missing required fields.  Please edit config.py and fill out the required fields.")
-    exit()
+    sys.exit()
 
   # Start Pylast
   # In order to perform a write operation you need to authenticate yourself
