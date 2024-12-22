@@ -133,7 +133,6 @@ class RocksmithScrobbler:
       self.network.update_now_playing(title=self.title, artist=self.artist, album=self.album)
     else:
       self.network.update_now_playing(artist=self.artist, title=self.title)
-    self.clear_data()
 
 
 if __name__ == "__main__":
