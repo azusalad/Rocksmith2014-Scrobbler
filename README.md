@@ -1,5 +1,14 @@
 # Rocksmith2014 Scrobbler
-Scrobble to last.fm while playing Rocksmith 2014.
+Scrobble to [last.fm](https://www.last.fm/) while playing Rocksmith 2014.
+
+## Features
+1. Scrobble to last.fm while playing Rocksmith 2014's "Learn a Song" game mode.
+    * Other modes not tested.
+2. Update now playing status on last.fm when starting a song.
+3. Edits and replacements are supported.
+    * Full tag matching.
+    * Individual tag bulk matching with plain text.
+    * Individual tag bulk matching with regular expressions.
 
 ## Requirements
 Python3, [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer), `pylast`, and `selenium` with Firefox or Chrome.
