@@ -11,6 +11,7 @@ from config import *
 
 class RocksmithScrobbler:
   def __init__(self, network, logger):
+    """Constructor"""
     self.logger = logger
     self.logger.info("Starting RocksmithScrobbler.  Please ensure that Rocksniffer is already running.")
 
@@ -22,39 +23,54 @@ class RocksmithScrobbler:
     self.artist = ""
     self.title = ""
     self.album = ""
+    self.listening = False
     self.driver.get(REQUIRED_FIELDS["CURRENT_SONG_HTML"])
     self.logger.info("Fetching Rocksniffer HTML file...")
     WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
+
   def run(self):
+    """Start and loop the Scrobbler"""
     self.logger.info("Reading Rocksmith data and waiting to scrobble")
     while True:
+      sleep(SLEEP_INTERVAL)
       try:
         self.scrobble_loop()
       except KeyboardInterrupt as e:
         self.logger.critical("KeyboardInterrupt received, closing driver...")
         self.driver.close()
         raise e
-  
+
+
   def scrobble_loop(self):
-    if self.end_of_song(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text):
-      self.artist = self.driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
-      self.title = self.driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
-      self.album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
-      if self.album != "":
-        self.album = self.album.split(" (")[0]
+    status = self.song_checkpoint(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text)
+    if status == 1:
+      # Start checkpoint
+      if (not self.listening) or ((self.title, self.artist, self.album) != self.fetch_data()):
+        # Only update now playing if we were not listening to a song before or if the song is different
+        # The song could be different if the user hit the start checkpoint, but quit before reaching the end
+        self.title, self.artist, self.album = self.fetch_data()
+        self.scrobble_now_playing()
+      else:
+        self.logger.debug("Start checkpoint hit but not scrobbling")
+      self.listening = True
 
-      if self.artist in ARTIST_EDITS:
-        self.artist = ARTIST_EDITS[self.artist]
-      if self.title in TITLE_EDITS:
-        self.title = TITLE_EDITS[self.title]
-      if self.album in ALBUM_EDITS:
-        self.album = ALBUM_EDITS[self.album]
+    elif status == 2:
+      # End checkpoint
+      if self.listening and ((self.title, self.artist, self.album) == self.fetch_data()):
+        # Only scrobble if the start checkpoint was reached and song data is the same
+        # The song data might be different if the user hit the start checkpoint on a different song, quit, selected another song, fast forwarded to the end
+        self.scrobble()
+      else:
+        self.logger.debug("End checkpoint hit but not scrobbling")
+      self.listening = False
 
-      self.scrobble()
-    sleep(SLEEP_INTERVAL)
 
-  def end_of_song(self, progress_text: str) -> bool:
+  def song_checkpoint(self, progress_text: str) -> int:
+    """
+    Detect if reached a checkpoint in the song
+    Return 0 for none, 1 for start of song, 2 for end of song
+    """
     if progress_text == "":
       self.logger.debug(f"Progress_text currently not present")
       return False
@@ -64,21 +80,59 @@ class RocksmithScrobbler:
     current_seconds = int(current_time.split(":")[0]) * 60 + int(current_time.split(":")[1])
     total_seconds = int(total_time.split(":")[0]) * 60 + int(total_time.split(":")[1])
     self.logger.debug(f"Current time: {current_seconds} Total time: {total_seconds}")
-    return (total_seconds - current_seconds) <= END_THRESHOLD
+    if (total_seconds - current_seconds) <= END_THRESHOLD:
+      self.logger.debug("Ending checkpoint reached")
+      return 2
+    elif abs(current_seconds - START_THRESHOLD) <= 1:
+      self.logger.debug("Starting checkpoint reached")
+      return 1
+    else:
+      return 0
+
+
+  def fetch_data(self) -> (str, str, str):
+    """Fetch song data from the Rocksniffer HTML file"""
+    artist = self.driver.find_element(By.CLASS_NAME, "artist_name").get_attribute("data-stroke")
+    title = self.driver.find_element(By.CLASS_NAME, "song_name").get_attribute("data-stroke")
+    album = self.driver.find_element(By.CLASS_NAME, "album_name").get_attribute("data-stroke")
+    if album != "":
+      album = album.split(" (")[0]
+
+    if artist in ARTIST_EDITS:
+      artist = ARTIST_EDITS[artist]
+    if title in TITLE_EDITS:
+      title = TITLE_EDITS[title]
+    if album in ALBUM_EDITS:
+      album = ALBUM_EDITS[album]
+    
+    return (title, artist, album)
+
 
   def clear_data(self):
+    """Clear song data"""
     self.artist = ""
     self.title = ""
     self.album = ""
+    self.listening = False
+
 
   def scrobble(self):
+    """Submit a scrobble"""
     self.logger.info(f"Scrobbling: {self.title}, {self.artist}, {self.album}")
     if self.album:
       self.network.scrobble(title=self.title, artist=self.artist, album=self.album, timestamp=int(time()))
     else:
       self.network.scrobble(artist=self.artist, title=self.title, timestamp=int(time()))
     self.clear_data()
-    sleep(SCROBBLE_TIMEOUT)
+
+
+  def scrobble_now_playing(self):
+    """Update now playing"""
+    self.logger.info(f"Updating now playing: {self.title}, {self.artist}, {self.album}")
+    if self.album:
+      self.network.update_now_playing(title=self.title, artist=self.artist, album=self.album)
+    else:
+      self.network.update_now_playing(artist=self.artist, title=self.title)
 
 
 if __name__ == "__main__":
