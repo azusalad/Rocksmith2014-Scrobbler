@@ -43,7 +43,7 @@ class RocksmithScrobbler:
 
 
   def scrobble_loop(self):
-    status = self.end_of_song(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text)
+    status = self.song_checkpoint(self.driver.find_element(By.CLASS_NAME, "progress_bar_text").text)
     if status == 1:
       # Start checkpoint
       if (not self.listening) or ((self.title, self.artist, self.album) != self.fetch_data()):
@@ -130,9 +130,9 @@ class RocksmithScrobbler:
     """Update now playing"""
     self.logger.info(f"Updating now playing: {self.title}, {self.artist}, {self.album}")
     if self.album:
-      self.network.update_now_playing(title=self.title, artist=self.artist, album=self.album, timestamp=int(time()))
+      self.network.update_now_playing(title=self.title, artist=self.artist, album=self.album)
     else:
-      self.network.update_now_playing(artist=self.artist, title=self.title, timestamp=int(time()))
+      self.network.update_now_playing(artist=self.artist, title=self.title)
     self.clear_data()
 
 
