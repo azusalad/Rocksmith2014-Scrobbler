@@ -27,5 +27,5 @@ If you are using the pre built binary, you just need Rocksniffer and Firefox or 
 ### From Binary
 1. Acquire the binary from the [releases](https://github.com/azusalad/Rocksmith2014-Scrobbler/releases) page.
 2. Start the [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer) application.  Don't open any Rocksniffer HTML files when starting the scrobbler.
-3. Edit the `config.py` file with your last.fm information.  You will need to get an [API key](https://www.last.fm/api/account/create).
+3. Extract the zip file.  Edit the `config.py` file with your last.fm information.  You will need to get an [API key](https://www.last.fm/api/account/create).
 4. Run `.\RocksmithScrobbler.exe` from a terminal.
