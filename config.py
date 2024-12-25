@@ -49,8 +49,8 @@ REGEX_BULK_TITLE_EDITS = {}
 REGEX_BULK_ALBUM_EDITS = {}
 
 # Whether to scrobble albums or not
-# Consider setting this to false if you play a lot of CDLC.
-SCROBBLE_ALBUMS = True
+# Consider setting this to False if you play a lot of CDLC.
+SCROBBLE_ALBUMS = False
 
 # ---------------------------------------
 # Probably don't want to change the values below
