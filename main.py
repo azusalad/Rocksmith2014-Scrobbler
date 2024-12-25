@@ -9,6 +9,7 @@ import pylast
 import logging
 import os
 import re
+from threading import Thread
 sys.path.append(os.path.dirname(sys.executable))
 from config import *
 
@@ -16,7 +17,10 @@ class RocksmithScrobbler:
   def __init__(self, network, logger):
     """Constructor"""
     self.logger = logger
-    self.logger.info("Starting RocksmithScrobbler.  Please ensure that Rocksniffer is already running.")
+    self.logger.info("Starting RocksmithScrobbler.")
+    self.sniffer_thread = Thread(target = self.run_sniffer)
+    self.sniffer_thread.daemon = True
+    self.sniffer_thread.start()
 
     self.network = network
     try:
@@ -27,10 +31,12 @@ class RocksmithScrobbler:
     self.title = ""
     self.album = ""
     self.listening = False
-    self.driver.get(REQUIRED_FIELDS["CURRENT_SONG_HTML"])
+    self.driver.get(f'file:///{os.path.join(REQUIRED_FIELDS["ROCKSNIFFER_PATH"], r"addons\current_song\current_song.html").replace("\\","/")}')
     self.logger.info("Fetching Rocksniffer HTML file...")
     WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, "progress_bar_text")))
 
+  def run_sniffer(self):
+    os.system(f'"{os.path.join(REQUIRED_FIELDS["ROCKSNIFFER_PATH"], "RockSniffer.exe")}"')
 
   def run(self):
     """Start and loop the Scrobbler"""

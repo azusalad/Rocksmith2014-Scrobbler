@@ -2,9 +2,11 @@
 # Required fields
 # ---------------------------------------
 REQUIRED_FIELDS = {
-  # Path to the Rocksniffer current_song html file
-  # Example: file:///C:/RockSniffer.0.5.0/addons/current_song/current_song.html
-  "CURRENT_SONG_HTML": "",
+  # Path to the Rocksniffer directory.
+  # Keep the r before the quotes since literal string.
+  # Example below:
+  # "ROCKSNIFFER_PATH": r"C:\Path\To\RockSniffer.0.5.0",
+  "ROCKSNIFFER_PATH": r"",
 
   # ---------------------------------------
   # last.fm information
