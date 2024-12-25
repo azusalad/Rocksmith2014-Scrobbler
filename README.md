@@ -20,12 +20,29 @@ If you are using the pre built binary, you just need Rocksniffer and Firefox or 
 ## Usage
 
 ### From Source (preferred)
-1. Start the [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer) application.  Don't open any Rocksniffer HTML files when starting the scrobbler.
-2. Edit the `config.py` file with your last.fm information.  You will need to get an [API key](https://www.last.fm/api/account/create).
-3. Run `python main.py`.
+1. Install the [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer) application.  Don't open any Rocksniffer HTML files when starting the scrobbler.
+2. Edit the `config.py` file with your last.fm information and location of the Rocksniffer folder.  You will need to get a last.fm [API key](https://www.last.fm/api/account/create).
+3. Run `python main.py`.  The scrobbler will automatically start the Rocksniffer application.
 
 ### From Binary
 1. Acquire the binary from the [releases](https://github.com/azusalad/Rocksmith2014-Scrobbler/releases) page.
-2. Start the [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer) application.  Don't open any Rocksniffer HTML files when starting the scrobbler.
-3. Extract the zip file.  Edit the `config.py` file with your last.fm information.  You will need to get an [API key](https://www.last.fm/api/account/create).
-4. Run `.\RocksmithScrobbler.exe` from a terminal.
+2. Install the [Rocksniffer](https://github.com/kokolihapihvi/RockSniffer) application.  Don't open any Rocksniffer HTML files when starting the scrobbler.
+3. Extract the zip file.  Edit the `config.py` file with your last.fm information and location of the Rocksniffer folder.  You will need to get a last.fm [API key](https://www.last.fm/api/account/create).
+4. Run `.\RocksmithScrobbler.exe` from a terminal.  The scrobbler will automatically start the Rocksniffer application.
+
+### Autostart with Steam
+
+You can have the scrobbler run automatically when the game is launched by modifying the launch options on Steam.  The launch options would be something like:
+
+```
+"path\to\your\script.bat" %command%
+```
+
+Where the `.bat` file is a custom script containing something like:
+
+```
+start "python path\to\rocksmith\scrobbler\main.py"
+%1
+```
+
+This batch file asynchronously starts the scrobbler, then starts the game with `%1`
