@@ -41,7 +41,7 @@ You can have the scrobbler run automatically when the game is launched by modify
 Where the `.bat` file is a custom script containing something like:
 
 ```
-start "python path\to\rocksmith\scrobbler\main.py"
+start python "path\to\rocksmith\scrobbler\main.py"
 %1
 ```
 
