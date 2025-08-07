@@ -118,6 +118,8 @@ class RocksmithScrobbler:
     # Specific song edits
     if (title, artist, album) in SPECIFIC_SONG_EDITS:
       return SPECIFIC_SONG_EDITS[(title, artist, album)]
+    elif (title, artist) in SPECIFIC_SONG_EDITS:
+      return SPECIFIC_SONG_EDITS[(title, artist)][0], SPECIFIC_SONG_EDITS[(title, artist)][1], album
 
     title_done, artist_done, album_done = False, False, False
 

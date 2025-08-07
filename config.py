@@ -26,6 +26,7 @@ REQUIRED_FIELDS = {
 # Match all tags with plain text before replacing
 SPECIFIC_SONG_EDITS = {
   # (original title, original artist, original album): (modified title, modified artist, modified album)
+  # Album can be omitted on both sides: (original title, original artist): (modified title, modified artist)
   # Example below
   ('Don\'t Say "Lazy"', "Houkago Tea Time", 'Don\'t Say "Lazy"'): ('Don\'t Say "Lazy" (From "K-On!")', "Sakurakou K-ON Bu", 'Don\'t Say "Lazy" (From "K-On!)'),
 }
