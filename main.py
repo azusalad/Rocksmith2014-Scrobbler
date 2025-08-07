@@ -169,20 +169,22 @@ class RocksmithScrobbler:
 
   def scrobble(self):
     """Submit a scrobble"""
-    self.logger.info(f"Scrobbling: {self.title}, {self.artist}, {self.album}")
     if self.album and SCROBBLE_ALBUMS:
+      self.logger.info(f"Scrobbling: {self.title}, {self.artist}, {self.album}")
       self.network.scrobble(title=self.title, artist=self.artist, album=self.album, timestamp=int(time()))
     else:
+      self.logger.info(f"Scrobbling: {self.title}, {self.artist}")
       self.network.scrobble(artist=self.artist, title=self.title, timestamp=int(time()))
     self.clear_data()
 
 
   def scrobble_now_playing(self):
     """Update now playing"""
-    self.logger.info(f"Updating now playing: {self.title}, {self.artist}, {self.album}")
     if self.album and SCROBBLE_ALBUMS:
+      self.logger.info(f"Updating now playing: {self.title}, {self.artist}, {self.album}")
       self.network.update_now_playing(title=self.title, artist=self.artist, album=self.album)
     else:
+      self.logger.info(f"Updating now playing: {self.title}, {self.artist}")
       self.network.update_now_playing(artist=self.artist, title=self.title)
 
 
